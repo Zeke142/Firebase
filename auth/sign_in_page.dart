@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart'; // Add this for third-party sign-in buttons
+import 'package:flutter_signin_button/flutter_signin_button.dart'; // For third-party sign-in buttons
 import 'package:google_sign_in/google_sign_in.dart'; // For Google Sign-In
 import 'package:firebase_auth_oauth/firebase_auth_oauth.dart'; // For Apple and Facebook Sign-In
 import '../app/dirt_hub_elite_app.dart';  // Correct import path for DirtHubEliteApp
