@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart'; // For third-party sign-in buttons
-import 'package:google_sign_in/google_sign_in.dart'; // For Google Sign-In
-import 'package:firebase_auth_oauth/firebase_auth_oauth.dart'; // For Apple and Facebook Sign-In
+import 'package:flutter_signin_button/flutter_signin_button.dart'; // Import for third-party sign-in buttons
+import 'package:google_sign_in/google_sign_in.dart'; // Import for Google Sign-In
+import 'package:firebase_auth_oauth/firebase_auth_oauth.dart'; // Import for Apple and Facebook Sign-In
 import '../app/dirt_hub_elite_app.dart';  // Correct import path for DirtHubEliteApp
 
 class SignInPage extends StatefulWidget {
@@ -43,12 +43,21 @@ class SignInPageState extends State<SignInPage> {
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+      if (googleUser == null) {
+        // User canceled the sign-in
+        setState(() {
+          _errorMessage = 'Google sign-in was canceled.';
+        });
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
