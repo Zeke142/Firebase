@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../app/dirt_hub_elite_app.dart';  // Correct import for navigation to the main app
+import '../app/dirt_hub_elite_app.dart';  // Import your main app
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});  // Using super parameter for the key
 
   @override
-  SignUpPageState createState() => SignUpPageState();  // No underscore to avoid private type in public API
+  SignUpPageState createState() => SignUpPageState();  // Public API state class
 }
 
 class SignUpPageState extends State<SignUpPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;  // Firebase Auth instance
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -17,6 +18,7 @@ class SignUpPageState extends State<SignUpPage> {
 
   // Function to handle sign-up
   Future<void> _signUp() async {
+    // Check if passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
         _errorMessage = 'Passwords do not match';
@@ -26,20 +28,17 @@ class SignUpPageState extends State<SignUpPage> {
 
     try {
       // Try to sign up the user with email and password
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
-      // Check if the widget is still mounted before navigating
-      if (mounted) {
-        // Navigate to the main app after sign-up
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),  // Correct navigation to main app
-        );
-      }
-    } catch (e) {
+      // Navigate to the main app after successful sign-up
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),  // Navigate to main app
+      );
+    } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = 'Failed to create account. Please try again.';
       });
