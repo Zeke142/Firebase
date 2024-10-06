@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';  // For authentication if needed
+import 'package:firebase_auth/firebase_auth.dart';  // For authentication
 
 // FirebaseDataConnect class handles Firestore data operations.
 class FirebaseDataConnect {
@@ -7,12 +7,43 @@ class FirebaseDataConnect {
 
   // Method to add data to a specified Firestore collection.
   Future<void> addData(String collection, Map<String, dynamic> data) async {
-    await firestore.collection(collection).add(data);
+    try {
+      await firestore.collection(collection).add(data);
+      print("Data added successfully to $collection");
+    } catch (e) {
+      print("Failed to add data: $e");
+    }
   }
 
   // Method to retrieve data from a specified Firestore collection.
   Future<QuerySnapshot> getData(String collection) async {
-    return await firestore.collection(collection).get();
+    try {
+      QuerySnapshot snapshot = await firestore.collection(collection).get();
+      return snapshot;
+    } catch (e) {
+      print("Failed to retrieve data: $e");
+      rethrow;
+    }
+  }
+
+  // Method to update data in Firestore by document ID.
+  Future<void> updateData(String collection, String docId, Map<String, dynamic> newData) async {
+    try {
+      await firestore.collection(collection).doc(docId).update(newData);
+      print("Data updated successfully in $collection/$docId");
+    } catch (e) {
+      print("Failed to update data: $e");
+    }
+  }
+
+  // Method to delete data in Firestore by document ID.
+  Future<void> deleteData(String collection, String docId) async {
+    try {
+      await firestore.collection(collection).doc(docId).delete();
+      print("Data deleted successfully in $collection/$docId");
+    } catch (e) {
+      print("Failed to delete data: $e");
+    }
   }
 }
 
@@ -47,12 +78,25 @@ enum CallerSDKType {
 }
 
 // Example usage of FirebaseDataConnect and CallerSDKType in the main application.
-void main() {
+void main() async {
   FirebaseDataConnect dataConnect = FirebaseDataConnect();
 
   // Adding data to a Firestore collection.
-  dataConnect.addData("collection_name", {"field": "value"});
+  await dataConnect.addData("users", {"name": "John Doe", "age": 30});
+
+  // Retrieving data from a Firestore collection.
+  QuerySnapshot users = await dataConnect.getData("users");
+  for (var doc in users.docs) {
+    print(doc.data());
+  }
+
+  // Updating data in Firestore.
+  await dataConnect.updateData("users", "documentId", {"age": 31});
+
+  // Deleting data in Firestore.
+  await dataConnect.deleteData("users", "documentId");
 
   // Setting the SDK type.
   CallerSDKType sdkType = CallerSDKType.type1;
+  print("SDK Type set to: $sdkType");
 }
