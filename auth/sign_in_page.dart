@@ -1,78 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_login/flutter_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'signup_page.dart'; // Import your signup page
 import '../app/dirt_hub_elite_app.dart'; // Import your main app
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class SignInPage extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  @override
-  SignInPageState createState() => SignInPageState();
-}
+  Duration get loginTime => Duration(milliseconds: 2250);
 
-class SignInPageState extends State<SignInPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  String _errorMessage = '';
-
-  // Function to handle Email/Password sign-in
-  Future<void> _signInWithEmail() async {
+  Future<String?> _loginUser(LoginData data) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+      await _auth.signInWithEmailAndPassword(
+        email: data.name,
+        password: data.password,
       );
+      return null; // Successful login
+    } on FirebaseAuthException catch (e) {
+      return e.message; // Return Firebase error message
+    }
+  }
 
-      if (mounted) {
-        // Navigate to the main app page after successful sign-in
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to sign in. Please check your credentials.';
-      });
-      debugPrint("Error signing in with Email: $e");
+  Future<String?> _signUpUser(SignupData data) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: data.name!,
+        password: data.password!,
+      );
+      return null; // Successful signup
+    } on FirebaseAuthException catch (e) {
+      return e.message; // Return Firebase error message
+    }
+  }
+
+  Future<String?> _recoverPassword(String name) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: name);
+      return null; // Successful password recovery
+    } on FirebaseAuthException catch (e) {
+      return e.message; // Return Firebase error message
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign In'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _signInWithEmail,
-              child: const Text('Sign In with Email'),
-            ),
-            if (_errorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            const SizedBox(height: 20),
-          ],
-        ),
+    return FlutterLogin(
+      title: 'DirtHub',
+      onLogin: _loginUser,
+      onSignup: _signUpUser,
+      onSubmitAnimationCompleted: () {
+        // Navigate to the main app page after successful login
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),
+        );
+      },
+      onRecoverPassword: _recoverPassword,
+      theme: LoginTheme(
+        primaryColor: Colors.blueAccent,
       ),
     );
   }
