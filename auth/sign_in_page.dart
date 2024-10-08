@@ -3,37 +3,32 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'sign_up_page.dart'; // Corrected import for the signup page
 import '../app/dirt_hub_elite_app.dart'; // Import your main app
 
-class SignInPage extends StatefulWidget {
-  @override
-  _SignInPageState createState() => _SignInPageState();
-}
-
-class _SignInPageState extends State<SignInPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  String _errorMessage = '';
-
-  Future<void> _loginUser() async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      // Navigate to the main app after successful login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message ?? 'Login failed. Please try again.';
-      });
-    }
-  }
+class SignInPage extends StatelessWidget {
+  const SignInPage({Key? key}) : super(key: key); // Added const constructor
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance; // Moved FirebaseAuth instance inside build method
+    final TextEditingController _emailController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+    String _errorMessage = '';
+
+    Future<void> _loginUser() async {
+      try {
+        await _auth.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        // Navigate to the main app after successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),
+        );
+      } on FirebaseAuthException catch (e) {
+        _errorMessage = e.message ?? 'Login failed. Please try again.'; // Updated error handling
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign In'),
