@@ -1,62 +1,82 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'signup_page.dart'; // Import your signup page
+import 'sign_up_page.dart'; // Corrected import for the signup page
 import '../app/dirt_hub_elite_app.dart'; // Import your main app
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
+  @override
+  _SignInPageState createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String _errorMessage = '';
 
-  Duration get loginTime => Duration(milliseconds: 2250);
-
-  Future<String?> _loginUser(LoginData data) async {
+  Future<void> _loginUser() async {
     try {
       await _auth.signInWithEmailAndPassword(
-        email: data.name,
-        password: data.password,
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
-      return null; // Successful login
-    } on FirebaseAuthException catch (e) {
-      return e.message; // Return Firebase error message
-    }
-  }
-
-  Future<String?> _signUpUser(SignupData data) async {
-    try {
-      await _auth.createUserWithEmailAndPassword(
-        email: data.name!,
-        password: data.password!,
+      // Navigate to the main app after successful login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),
       );
-      return null; // Successful signup
     } on FirebaseAuthException catch (e) {
-      return e.message; // Return Firebase error message
-    }
-  }
-
-  Future<String?> _recoverPassword(String name) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: name);
-      return null; // Successful password recovery
-    } on FirebaseAuthException catch (e) {
-      return e.message; // Return Firebase error message
+      setState(() {
+        _errorMessage = e.message ?? 'Login failed. Please try again.';
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FlutterLogin(
-      title: 'DirtHub',
-      onLogin: _loginUser,
-      onSignup: _signUpUser,
-      onSubmitAnimationCompleted: () {
-        // Navigate to the main app page after successful login
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),
-        );
-      },
-      onRecoverPassword: _recoverPassword,
-      theme: LoginTheme(
-        primaryColor: Colors.blueAccent,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sign In'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _loginUser,
+              child: const Text('Sign In'),
+            ),
+            if (_errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignUpPage()), // Corrected to SignUpPage
+                );
+              },
+              child: const Text('Create an account'),
+            ),
+          ],
+        ),
       ),
     );
   }
