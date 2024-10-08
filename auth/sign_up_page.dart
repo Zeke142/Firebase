@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../app/dirt_hub_elite_app.dart';  // Import your main app
+import '../app/dirt_hub_elite_app.dart'; // Import your main app
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});  // Using super parameter for the key
+  const SignUpPage({super.key}); // Using super parameter for the key
 
   @override
-  SignUpPageState createState() => SignUpPageState();  // Public API state class
+  SignUpPageState createState() => SignUpPageState(); // Public API state class
 }
 
 class SignUpPageState extends State<SignUpPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;  // Firebase Auth instance
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -19,7 +19,7 @@ class SignUpPageState extends State<SignUpPage> {
   // Function to handle sign-up
   Future<void> _signUp() async {
     // Check if passwords match
-    if (_passwordController.text != _confirmPasswordController.text) {
+    if (_passwordController.text.trim() != _confirmPasswordController.text.trim()) {
       setState(() {
         _errorMessage = 'Passwords do not match';
       });
@@ -29,20 +29,20 @@ class SignUpPageState extends State<SignUpPage> {
     try {
       // Try to sign up the user with email and password
       await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
       // Navigate to the main app after successful sign-up
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),  // Navigate to main app
+        MaterialPageRoute(builder: (context) => const DirtHubEliteApp()), // Navigate to main app
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = 'Failed to create account. Please try again.';
       });
-      debugPrint("Error creating account: $e");  // Use debugPrint for logging
+      debugPrint("Error creating account: $e"); // Use debugPrint for logging
     }
   }
 
