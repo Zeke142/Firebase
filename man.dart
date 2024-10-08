@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'auth/sign_in_page.dart'; // Update this path if needed
+import 'auth/sign_in_page.dart'; // Ensure this path is correct
 import 'home_page.dart'; // Ensure you have this page created
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();  // Firebase initialization
-  runApp(const MyApp()); // Running your app
+  await Firebase.initializeApp();  // Initialize Firebase
+  runApp(const MyApp()); // Run your app
 }
 
 class MyApp extends StatelessWidget {
@@ -17,9 +17,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DirtHub',
       theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: '/login',
+      initialRoute: '/login', // Set the initial route to the Sign In Page
       routes: {
-        '/login': (context) => const SignInPage(), // Navigate to the Sign In Page first
+        '/login': (context) => const SignInPage(), // Navigate to Sign In Page
         '/home': (context) => const HomePage(), // Define your HomePage widget
       },
     );
