@@ -1,34 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'sign_up_page.dart'; // Corrected import for the signup page
-import '../app/dirt_hub_elite_app.dart'; // Import your main app
 
-class SignInPage extends StatelessWidget {
-  const SignInPage({Key? key}) : super(key: key); // Added const constructor
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
+  @override
+  _SignInPageState createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  String _errorMessage = '';
+
+  Future<void> _signIn() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      // On successful sign-in, navigate to the Home Page
+      Navigator.pushReplacementNamed(context, '/home');
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        if (e.code == 'user-not-found') {
+          _errorMessage = 'No user found for that email.';
+        } else if (e.code == 'wrong-password') {
+          _errorMessage = 'Wrong password provided for that user.';
+        } else {
+          _errorMessage = 'Error: ${e.message}';
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final FirebaseAuth _auth = FirebaseAuth.instance; // Moved FirebaseAuth instance inside build method
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
-    String _errorMessage = '';
-
-    Future<void> _loginUser() async {
-      try {
-        await _auth.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
-        // Navigate to the main app after successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const DirtHubEliteApp()),
-        );
-      } on FirebaseAuthException catch (e) {
-        _errorMessage = e.message ?? 'Login failed. Please try again.'; // Updated error handling
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign In'),
@@ -40,35 +56,31 @@ class SignInPage extends StatelessWidget {
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                errorText: _errorMessage.isNotEmpty ? _errorMessage : null,
+              ),
             ),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                errorText: _errorMessage.isNotEmpty ? _errorMessage : null,
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _loginUser,
+              onPressed: _signIn,
               child: const Text('Sign In'),
             ),
-            if (_errorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16.0),
             TextButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUpPage()), // Corrected to SignUpPage
-                );
+                Navigator.pushReplacementNamed(context, '/signup'); // Navigate to sign-up page if it exists
               },
-              child: const Text('Create an account'),
+              child: const Text('Create an Account'),
             ),
           ],
         ),
