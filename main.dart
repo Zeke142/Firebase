@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login', // Set the initial route to the Sign In Page
       routes: {
         '/login': (context) => const SignInPage(), // Navigate to Sign In Page
+        '/signup': (context) => const SignUpPage(), // Navigate to Sign Up Page (added this route)
         '/home': (context) => const HomePage(), // Define your HomePage widget
         '/buyers': (context) => const BuyersPage(), // Navigate to Buyers Page
         '/sellers': (context) => const SellersPage(), // Navigate to Sellers Page
