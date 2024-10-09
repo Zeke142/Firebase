@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'auth/sign_in_page.dart'; // Ensure this path is correct
+import 'auth/sign_up_page.dart'; // Ensure this path is correct
 import 'pages/home_page.dart'; // Ensure you have this page created
 import 'pages/buyers_page.dart'; // Import BuyersPage
 import 'pages/sellers_page.dart'; // Import SellersPage
