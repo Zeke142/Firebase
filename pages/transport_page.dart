@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class TransportPage extends StatelessWidget {  // Public class without underscore
-  const TransportPage({super.key});  // Converted 'key' to a super parameter
+class TransportPage extends StatelessWidget { // Public class without underscore
+  const TransportPage({super.key}); // Converted 'key' to a super parameter
 
   @override
   Widget build(BuildContext context) {
