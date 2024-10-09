@@ -1,44 +1,35 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});  // Constructor
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DirtHub Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              // Implement logout functionality here
-              // Example: FirebaseAuth.instance.signOut();
-              // Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
+        title: const Text('Home Page'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Welcome to DirtHub!',
-              style: TextStyle(fontSize: 24),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Your home for connecting with buyers and sellers.',
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 40),
+          children: [
             ElevatedButton(
               onPressed: () {
-                // Implement functionality to navigate to other features
+                Navigator.pushNamed(context, '/buyers'); // Navigate to Buyers Page
               },
-              child: const Text('Explore Features'),
+              child: const Text('Go to Buyers Page'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/sellers'); // Navigate to Sellers Page
+              },
+              child: const Text('Go to Sellers Page'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/transport'); // Navigate to Transport Page
+              },
+              child: const Text('Go to Transport Page'),
             ),
           ],
         ),
