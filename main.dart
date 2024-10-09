@@ -5,10 +5,13 @@ import 'pages/home_page.dart'; // Ensure you have this page created
 import 'pages/buyers_page.dart'; // Import BuyersPage
 import 'pages/sellers_page.dart'; // Import SellersPage
 import 'pages/transport_page.dart'; // Import TransportPage
+import 'config/firebase_options.dart'; // Import the generated Firebase options file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Use the Firebase options
+  );
   runApp(const MyApp()); // Run your app
 }
 
