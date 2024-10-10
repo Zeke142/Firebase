@@ -78,7 +78,8 @@ class _SignInPageState extends State<SignInPage> {
             const SizedBox(height: 16.0),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/signup'); // Navigate to sign-up page if it exists
+                // Navigate to the SignUp page
+                Navigator.pushNamed(context, '/signup');
               },
               child: const Text('Create an Account'),
             ),
